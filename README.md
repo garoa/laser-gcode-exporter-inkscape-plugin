@@ -1,6 +1,6 @@
 About This Project
 ------------------
-This project was intended to build and all in one exporting plugin for laser cutters and Inkscape 0.91. It has not been tested on lower versions of Inkscape but may work..
+This project is an all-in-one exporting plugin for laser cutters and Inkscape. It requires Inkscape 1.0 or newer and Python 3, and has been verified on Inkscape 1.3; the original version targeted Inkscape 0.91 and Python 2.7 and is preserved under the `1.0.1` tag.
 The plugin builds gcode that is compatible with a fork of Marlin designed to run on laser cutters found at https://github.com/TurnkeyTyranny/buildlog-lasercutter-marlin .
 
 You can contact me via email at : 394ad2f@gmail.com, I check my email daily usually.
@@ -15,48 +15,39 @@ Find this software useful? Donations are gratefully appreciated.
 Installation
 ------------
 
-Copy the files turnkeylaser.py and turnkeylaser.inx into your Inkscape extensions folder -> C:\Program Files\Inkscape\share\extensions
-Fire up inkscape and you will find the plugin under Extensions -> Export -> Turnkey Laser Exporter.
+**Requires Inkscape 1.0 or newer** (verified on 1.3). For Inkscape 0.91 use the `1.0.1`
+release of this plugin instead. See `CHANGELOG.md` for what changed in the 1.x port.
 
-This script relies on a more advanced version of the PIL library than Inkscape for windows ships with. As such you need to follow these steps for windows installs of Inkscape 0.91 
-You have two options to follow, choose the one you prefer.
+Copy `turnkeylaser.py` and `turnkeylaser.inx` into your Inkscape user extensions folder:
 
-1) You can alternatively install python on your system, or use my precompiled version. To install python natively :
-* visit https://www.python.org/downloads/ and download python 2.7.9 32 bit version (https://www.python.org/ftp/python/2.7.9/python-2.7.9.msi) and install it to C:\Python27\ . Select the option to add Python to your path during install.
-* In the folder : C:\Program Files\Inkscape you will need to rename the folder "python" to "python-old" so it uses the new system install instead.
-* Open up the command line by pressing windows key+r and typing in 'cmd' without the quotes then press enter.
-* From the command line, run this command : pip install wheel
-* If you get an error message that pip cannot be found on your system, then your windows path is incorrect. Run this command, without the quotes "set PATH=%PATH%;C:\Python27\;C:\Python27\Scripts" and then repeat the above step.
-* Download the Python Image Library from this repo : https://github.com/TurnkeyTyranny/laser-gcode-exporter-inkscape-plugin/blob/master/PIL/Pillow-2.7.0-cp27-none-win32.whl and place it in an easy to navigate to folder, such as your C:\ folder. Alternatively you can download the latest version of PIL from http://www.lfd.uci.edu/~gohlke/pythonlibs/#pil
-* Start the command line by pressing windows key+r and typing in cmd and pressing enter.
-* From the command line, navigate to where you placed that file. If for example you placed it in the C drive you would type without the quotes
-* "cd c:\"
-* "pip install Pillow-2.7.0-cp27-none-win32.whl"
-* You also need to install the libxml library, from the command line run this command without the quotes.
-* "easy_install lxml"
-* You are done, launch inkscape and run the plugin!
+* Windows: `%APPDATA%\inkscape\extensions`
+* macOS: `~/Library/Application Support/org.inkscape.Inkscape/config/inkscape/extensions`
+* Linux: `~/.config/inkscape/extensions`
 
-![alt tag](https://raw.githubusercontent.com/TurnkeyTyranny/laser-gcode-exporter-inkscape-plugin/master/python_2.7_install.png)
-![alt tag](https://raw.githubusercontent.com/TurnkeyTyranny/laser-gcode-exporter-inkscape-plugin/master/command_line_install.png)
+The exact path for your install is shown in Inkscape under
+*Edit -> Preferences -> System -> User extensions*. Restart Inkscape and you will find
+the plugin under *Extensions -> Export -> TurnkeyLaser Exporter*.
 
+That is the whole install if you only cut vector paths. Rastering images and other
+non-path objects additionally needs the Pillow imaging library in the Python interpreter
+Inkscape uses. Inkscape 1.x bundles its own Python 3 with Pillow already included on
+Windows and macOS, so this usually just works. If the plugin tells you Pillow is
+missing, install it into that interpreter:
 
-2) If you are using 32 bit inkscape you can potentially use my precompiled version of 32 bit python 2.7.9 with all the needed libraries follow these steps, however this works for some people and not for others. Unsure why :
-* Download my updated windows version of python from : https://github.com/TurnkeyTyranny/laser-gcode-exporter-inkscape-plugin/blob/master/files/Python27.rar
-* Navigate to C:\Program Files\Inkscape and rename the folder "python" to "python-old"
-* Extract the folder 'Python27' from the archive you downloaded to C:\Program Files\Inkscape and rename it to 'python' (Note the lower case p)
-* You are done, launch inkscape and run the plugin!
-* If you run the export plugin and you don't get a popup diagnostic log telling you which items were exported successfully then unfortunately you need to install Python manually as described below in option #2
+* Windows: `"C:\Program Files\Inkscape\bin\python.exe" -m pip install Pillow`
+* macOS: `/Applications/Inkscape.app/Contents/Resources/bin/python3 -m pip install Pillow`
+* Linux (system Python): `pip install --user Pillow`, or install your distribution's
+  `python3-pillow` package.
 
-Linux Installation
-------------------
-More fleshed out instructions to come at a later date. Essentially just install the PIL library through yum or apt-get and place the 2 script files (.py and .inx) into your extensions directory.
+Do **not** rename or replace Inkscape's bundled `python` folder — that was a workaround
+for Inkscape 0.91 on Windows and will break Inkscape 1.x.
 
 Usage and Setup
 ---------------
 I recommend starting with this cutting surface and doing your designs in it. Its setup to match the size of the K40 Laser cutter bed : https://github.com/TurnkeyTyranny/laser-gcode-exporter-inkscape-plugin/blob/master/designs/cutting_surface.svg
 
 
-Alternatively if you're setting up your own new inkscape job first press CTRL+Shift+d, choose the tab called 'page' and set your project units in the 'custom size' area to be 'px'. You can set the 'Default Units' option to be mm, inch or px. The 'Default Units' are the ones displayed on your rulers.
+Alternatively just set up your own new Inkscape job however you like. Unlike earlier versions of this plugin, the document no longer has to be in `px`: the exporter reads the page size and scale from the document itself, so mm, inch and px documents all export at the correct size. Set the output units you want the gcode in (mm or in) on the *Preferences* tab of the export dialog.
 
 Name your layer in Inkscape like: 10 [feed=600,ppm=40]
 
