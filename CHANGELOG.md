@@ -8,11 +8,15 @@ Port of the extension from Inkscape 0.48/0.91 + Python 2.7 to **Inkscape 1.0+ an
 Python 3**. Developed and verified against Inkscape 1.3 (inkex 1.3.0, Python 3.10,
 Pillow 9.4) on macOS. The code targets the documented inkex 1.0 API and carries
 fallbacks for the API renames since, so it should run on 1.0 through 1.4 — but only
-1.3 has actually been exercised.
+1.3 has actually been exercised. A copy for Inkscape 1.5 lives in `inkscape-1.5/`
+and is waiting on a first test on Windows.
 
 The extension no longer runs on Inkscape 0.9x — that release line ships Python 2
-and the pre-1.0 `inkex` API, both of which are gone here. Keep using the `1.0.1`
-tag if you still run Inkscape 0.91.
+and the pre-1.0 `inkex` API, both of which are gone here. If you still run
+Inkscape 0.91, keep using the last Python 2 version, now in `inkscape-0.91/`
+(it reports itself as `1.0.1` and matches commit `1038e01`).
+
+`VERSION` in `turnkeylaser.py` is bumped from `1.0.1` to `2.0.0`.
 
 ---
 
@@ -20,7 +24,7 @@ tag if you still run Inkscape 0.91.
 
 | | Before | After |
 |---|---|---|
-| Inkscape | 0.48 / 0.91 | 1.0+ (verified on 1.3) |
+| Inkscape | 0.48 / 0.91 | 1.0+ (verified on 1.3; 1.5 untested) |
 | Python | 2.7 | 3.6+ |
 | SVG user unit | 1/90 inch | 1/96 inch (SVG 1.1 standard) |
 | Document units | had to be `px` | any (mm, in, px, …) |
@@ -196,6 +200,43 @@ errors on Python 3.
 
 ---
 
+### Documentation and repository housekeeping
+
+* **README rewritten for 1.x.** It states the Inkscape 1.0+ / Python 3 requirement
+  and replaces the Windows Python 2.7 install steps (renaming Inkscape's bundled
+  `python` folder, installing the Pillow 2.7 wheel, unpacking `Python27.rar`). The new
+  install section gives the user extensions folder for Windows, macOS and Linux, and
+  explains how to `pip install Pillow` into Inkscape's own interpreter, which is only
+  needed when the plugin reports Pillow missing. It also warns against
+  replacing Inkscape's bundled Python, which breaks 1.x.
+* The README no longer tells you to set the document up in `px`, since the exporter
+  now reads the scale from the document.
+* `turnkeylaser.py` and `turnkeylaser.inx` were converted from CRLF to LF line
+  endings. This is why the port's diff touches nearly every line of both files. Use
+  `git diff -w` / `git blame -w` to see the real changes. The files have since moved
+  into per-version folders, so add `--follow` (e.g. `git log --follow -p
+  inkscape-1.3/turnkeylaser.py`) to see their history from before the move.
+* This `CHANGELOG.md` was added.
+* **One folder per Inkscape release.** The plugin files moved out of the repository
+  root:
+  * `inkscape-0.91/`: the untouched 1.0.1 Python 2 version, plus the Python 2.7-era
+    install extras that only it uses (`PIL/`, `files/Python27.rar` and the two
+    install screenshots).
+  * `inkscape-1.3/`: the 2.0.0 port, verified on Inkscape 1.3.
+  * `inkscape-1.5/`: an identical copy of the 2.0.0 port. It is kept separate so fixes
+    for 1.5 don't touch the tested 1.3 version. It has not been tested yet.
+
+  Install by copying `turnkeylaser.py` and `turnkeylaser.inx` from the folder for
+  your Inkscape version.
+* The README install section now opens with a table of the folders, showing which
+  Inkscape releases each one covers, its plugin version and whether it has been
+  tested. 0.91 users are pointed to `inkscape-0.91/` and the 1.0.1 README at
+  commit `1038e01`.
+* Removed references to a `1.0.1` git tag from the README. No such tag exists on any
+  remote.
+
+---
+
 ### Behaviour changes worth knowing about
 
 * Geometry from a pre-0.92 document exports 6.25% smaller — see the DPI note above.
@@ -219,11 +260,31 @@ errors on Python 3.
   non-path object.
 * Scaling via **Scale along X/Y axis** still scales about the document origin, not about
   the centre of the selection.
-* The `PIL/` and `files/` directories still contain the Python 2.7-era Pillow wheels and
-  a bundled `Python27.rar`. They are dead weight now — Inkscape 1.x ships its own
-  Python 3 with Pillow — but have been left in place rather than deleted.
+* **Inkscape 1.5 is untested.** The things most likely to break there are:
+  * the older `inkex.bezier` helpers (`bezierpointatt`, `beziersplitatt`,
+    `beziertatlength`, `bezierlength`) that the arc fitting relies on, if 1.5
+    removed them;
+  * the raster command-line export and `--query-all` behaviour.
+* Every raster is rendered to the same temporary file (`tmpinkscapeexport.png`), and
+  the file is not deleted beforehand. If Inkscape fails to overwrite it (on Windows,
+  for example because it is locked), the previous object's image could be used
+  without any warning.
+* The Python 2.7-era Pillow wheels and the bundled `Python27.rar` are kept, now under
+  `inkscape-0.91/`. Inkscape 1.x doesn't need them because it ships its own Python 3
+  with Pillow.
 
 ---
+
+## [1.0.1] — post-release fixes (2015, community PRs)
+
+These landed after the README change log stops and without a version bump, so the
+code still reported `1.0.1`:
+
+* **Home only X and Y** (#2, quillford). *Home before starting* now emits `G28 XY`
+  instead of `G28`, so the Z axis is no longer homed.
+* **Layer power ignored after the first layer** (#5, Anton Todorov). A missing space
+  in the first `G01` of each path produced `X..Y..S..` with the `S` word run into
+  the last coordinate (e.g. `Y12.5S40.00`), so the layer's power was ignored.
 
 ## [1.0.1] and earlier
 

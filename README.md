@@ -1,6 +1,6 @@
 About This Project
 ------------------
-This project is an all-in-one exporting plugin for laser cutters and Inkscape. It requires Inkscape 1.0 or newer and Python 3, and has been verified on Inkscape 1.3; the original version targeted Inkscape 0.91 and Python 2.7 and is preserved under the `1.0.1` tag.
+This project is an all-in-one exporting plugin for laser cutters and Inkscape. It requires Inkscape 1.0 or newer and Python 3, and has been verified on Inkscape 1.3; the original version (1.0.1) targeted Inkscape 0.91 and Python 2.7 and is kept in the `inkscape-0.91/` folder.
 The plugin builds gcode that is compatible with a fork of Marlin designed to run on laser cutters found at https://github.com/TurnkeyTyranny/buildlog-lasercutter-marlin .
 
 You can contact me via email at : 394ad2f@gmail.com, I check my email daily usually.
@@ -15,10 +15,22 @@ Find this software useful? Donations are gratefully appreciated.
 Installation
 ------------
 
-**Requires Inkscape 1.0 or newer** (verified on 1.3). For Inkscape 0.91 use the `1.0.1`
-release of this plugin instead. See `CHANGELOG.md` for what changed in the 1.x port.
+The plugin ships one folder per Inkscape release. Pick the folder that matches your
+Inkscape version:
 
-Copy `turnkeylaser.py` and `turnkeylaser.inx` into your Inkscape user extensions folder:
+| Folder | Inkscape | Plugin | Status |
+|---|---|---|---|
+| `inkscape-1.5/` | 1.5 | 2.0.0 | Not yet tested |
+| `inkscape-1.3/` | 1.0 – 1.4 | 2.0.0 | Verified on 1.3 (macOS) |
+| `inkscape-0.91/` | 0.91 | 1.0.1 | Original Python 2.7 version, unmaintained |
+
+`inkscape-1.3/` and `inkscape-1.5/` currently hold identical code. They are separate so
+fixes for one release don't affect the other. See `CHANGELOG.md` for what changed in the
+1.x port. The rest of this section applies to the 1.x folders. For 0.91, follow the
+install notes in that version's README at commit `1038e01`.
+
+Copy `turnkeylaser.py` and `turnkeylaser.inx` from your version's folder into your
+Inkscape user extensions folder:
 
 * Windows: `%APPDATA%\inkscape\extensions`
 * macOS: `~/Library/Application Support/org.inkscape.Inkscape/config/inkscape/extensions`
